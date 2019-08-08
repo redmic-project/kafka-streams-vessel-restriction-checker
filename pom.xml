@@ -35,6 +35,7 @@
 		<lucene-spatial-extras.version>8.2.0</lucene-spatial-extras.version>
 		<jts-core.version>1.16.1</jts-core.version>
 		<junit.version>4.12</junit.version>
+		<jacoco.version>0.8.1</jacoco.version>
 	</properties>
 
 	<organization>
@@ -112,5 +113,30 @@
 
 	<build>
 		<finalName>vessel-restriction-checker</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<haltOnFailure>false</haltOnFailure>
+				</configuration>
+				<executions>
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>
