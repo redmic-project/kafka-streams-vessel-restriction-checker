@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  vessel-restriction-checker:
+    image: ${IMAGE_NAME}:${IMAGE_TAG:-latest}
+    environment:
+      APP_ID: {{.Service.Name}}-{{.Task.Slot}}
+      BOOTSTRAP_SERVERS:
+      SCHEMA_REGISTRY:
+      JAVA_OPTS:
+    networks:
+      kafka-net:
+      metric-net:
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        delay: 10s
+      update_policy:
+        delay: 1m
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.001'
+          memory: 256M
+
+networks:
+  kafka-net:
+    name: ${KAFKA_NET_NAME:-kafka-net}
+    external: true
+
+  metric-net:
+    name: ${METRIC_NET_NAME:-metric-net}
+    external: true
