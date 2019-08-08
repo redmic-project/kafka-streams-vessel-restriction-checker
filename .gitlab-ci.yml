@@ -21,5 +21,6 @@ stages:
 
 variables:
   MAVEN_GOALS: package dependency:copy-dependencies
+  BUILD_OUTPUT_PATH: target
   DOCKER_BUILD_ARGS: --build-arg PARENT_IMAGE_NAME=${PARENT_IMAGE_NAME} --build-arg PARENT_IMAGE_TAG=${PARENT_IMAGE_TAG}
   STACK: kafka-streams
