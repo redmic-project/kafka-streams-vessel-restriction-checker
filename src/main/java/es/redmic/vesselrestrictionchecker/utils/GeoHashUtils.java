@@ -1,4 +1,4 @@
-package es.redmic.kafkastreams.vesselrestrictionchecker.utils;
+package es.redmic.vesselrestrictionchecker.utils;
 
 import java.text.ParseException;
 import java.util.ArrayList;

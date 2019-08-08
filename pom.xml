@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>es.redmic.kafkastreams</groupId>
-	<artifactId>vesselrestrictionchecker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>vessel-restriction-checker</artifactId>
+	<version>0.1.0</version>
 	<packaging>jar</packaging>
 
 	<licenses>
@@ -15,7 +15,7 @@
 		</license>
 	</licenses>
 
-	<name>vesselrestrictionchecker</name>
+	<name>vessel-restriction-checker</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -31,9 +31,9 @@
 		<commons-cli.version>1.4</commons-cli.version>
 		<kafka.version>2.0.1</kafka.version>
 		<avro.version>1.8.2</avro.version>
-		<confluent.version>5.0.1</confluent.version>
 		<confluent.version>5.3.0</confluent.version>
-		<geotools.version>20.1</geotools.version>
+		<lucene-spatial-extras.version>8.2.0</lucene-spatial-extras.version>
+		<jts-core.version>1.16.1</jts-core.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 
@@ -79,13 +79,13 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spatial-extras</artifactId>
-			<version>8.2.0</version>
+			<version>${lucene-spatial-extras.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.locationtech.jts</groupId>
 			<artifactId>jts-core</artifactId>
-			<version>1.16.1</version>
+			<version>${jts-core.version}</version>
 		</dependency>
 
 		<dependency>
@@ -109,18 +109,8 @@
 			<url>http://packages.confluent.io/maven/</url>
 		</repository>
 	</repositories>
-	
+
 	<build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+		<finalName>vessel-restriction-checker</finalName>
+	</build>
 </project>

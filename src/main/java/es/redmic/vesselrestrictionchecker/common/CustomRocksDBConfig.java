@@ -1,4 +1,4 @@
-package es.redmic.kafkastreams.vesselrestrictionchecker.common;
+package es.redmic.vesselrestrictionchecker.common;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package es.redmic.kafkastreams.vesselrestrictionchecker.common;
+package es.redmic.vesselrestrictionchecker.common;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 
-import es.redmic.kafkastreams.vesselrestrictionchecker.utils.StreamsApplicationUtils;
+import es.redmic.vesselrestrictionchecker.utils.StreamsApplicationUtils;
 
 public abstract class StreamsApplicationBase {
 	

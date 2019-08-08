@@ -1,4 +1,4 @@
-package es.redmic.kafkastreams.vesselrestrictionchecker.utils;
+package es.redmic.vesselrestrictionchecker.utils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Test;
 import org.locationtech.spatial4j.exception.InvalidShapeException;
 
-import es.redmic.kafkastreams.vesselrestrictionchecker.utils.GeoHashUtils;
+import es.redmic.vesselrestrictionchecker.utils.GeoHashUtils;
 
 public class GeoHashUtilsTest {
 

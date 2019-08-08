@@ -1,4 +1,4 @@
-package es.redmic.kafkastreams.vesselrestrictionchecker.utils;
+package es.redmic.vesselrestrictionchecker.utils;
 
 import java.util.List;
 import java.util.Properties;
@@ -15,7 +15,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
 
-import es.redmic.kafkastreams.vesselrestrictionchecker.common.CustomRocksDBConfig;
+import es.redmic.vesselrestrictionchecker.common.CustomRocksDBConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 
 public class StreamsApplicationUtils {
