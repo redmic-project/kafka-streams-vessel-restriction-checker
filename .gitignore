@@ -1,0 +1,8 @@
+.*
+!.gitignore
+!.gitlab-ci.yml
+!.dockerignore
+!.env
+target
+pom.xml.*
+*-pom.xml

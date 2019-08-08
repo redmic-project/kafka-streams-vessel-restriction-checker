@@ -1,0 +1,25 @@
+include:
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/maven-building-microservice.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/license-listing.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/packaging.yml'
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/deployment.yml'
+
+stages:
+  - build
+  - license-list
+  - package
+  - test-package
+  - deploy
+
+variables:
+  MAVEN_GOALS: package dependency:copy-dependencies
+  DOCKER_BUILD_ARGS: --build-arg PARENT_IMAGE_NAME=${PARENT_IMAGE_NAME} --build-arg PARENT_IMAGE_TAG=${PARENT_IMAGE_TAG}
+  STACK: kafka-streams
