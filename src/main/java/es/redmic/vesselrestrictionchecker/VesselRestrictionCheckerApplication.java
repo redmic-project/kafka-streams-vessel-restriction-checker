@@ -1,53 +1,54 @@
 package es.redmic.vesselrestrictionchecker;
 
-import java.util.ArrayList;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.kafka.streams.kstream.KStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import es.redmic.vesselrestrictionchecker.common.StreamsApplicationBase;
-import es.redmic.vesselrestrictionchecker.utils.StreamsApplicationUtils;
-
 
 public class VesselRestrictionCheckerApplication extends StreamsApplicationBase {
+
+	// @formatter:off
 	
+	private static final String AREAS_TOPIC = "AREAS_TOPIC",
+			POINTS_TOPIC = "POINTS_TOPIC",
+			RESULT_TOPIC = "RESULT_TOPIC";
 	
-	private static final String AREAS_TOPIC = "areasTopic",
-			POINTS_TOPIC = "pointsTopic",
-			RESULT_TOPIC = "resultTopic";
-	
+	// @formatter:on
+
 	@SuppressWarnings("serial")
-	private static ArrayList<Option> commandLineOptions = new ArrayList<Option>() {{
-		addAll(commandLineBaseOptions);
-	    add(new Option(AREAS_TOPIC, true, "geofencing topic"));
-	    add(new Option(POINTS_TOPIC, true, "points to check topic"));
-	    add(new Option(RESULT_TOPIC, true, "result topic"));
-	}};
-	
-	/**
-	 *
-	 * @param args
-	 * 
-	 * 
-	 */
-		
-    public static void main(String[] args) {
-    	
-    	CommandLine commandLineArgs = StreamsApplicationUtils.getCommandLineArgs(args, commandLineOptions);
-    	
-    	// @formatter:off
+	private static HashMap<String, Object> requiredVariables = new HashMap<String, Object>() {
+		{
+			putAll(requiredVariablesBase);
+			put(AREAS_TOPIC, "Kafka topic for receiving geofencing areas");
+			put(POINTS_TOPIC, "Kafka topic for receiving points to check");
+			put(RESULT_TOPIC, "Kafka topic for sending checking result");
+		}
+	};
 
-    	String areasTopic = commandLineArgs.getOptionValue(AREAS_TOPIC),
-    			pointsTopic = commandLineArgs.getOptionValue(POINTS_TOPIC),
-    			resultTopic = commandLineArgs.getOptionValue(RESULT_TOPIC);
+	public static void main(String[] args) {
+
+		Map<String, Object> env = getEnvVariables(requiredVariables);
+
+		// @formatter:off
+
+    	String areasTopic = (String) env.get(AREAS_TOPIC),
+    			pointsTopic = (String) env.get(POINTS_TOPIC),
+    			resultTopic = (String) env.get(RESULT_TOPIC),
+				appId = (String) env.get(APP_ID),
+				bootstrapServers = (String) env.get(BOOTSTRAP_SERVERS),
+				schemaRegistry = (String) env.get(SCHEMA_REGISTRY);
     	// @formatter:on
-    	
-        KStream<String, String> areasStream = builder.stream(areasTopic),
-        		pointsStream = builder.stream(pointsTopic);
-        
-        // TODO: crear stream
 
-        startStream(commandLineArgs);
-    }
+		System.out.format("Load config...%n");
+		System.out.format("%s: %s%n", requiredVariables.get(AREAS_TOPIC), areasTopic);
+		System.out.format("%s: %s%n", requiredVariables.get(POINTS_TOPIC), pointsTopic);
+		System.out.format("%s: %s%n", requiredVariables.get(RESULT_TOPIC), resultTopic);
+
+		/*-KStream<String, String> areasStream = builder.stream(areasTopic),
+				pointsStream = builder.stream(pointsTopic);-*/
+
+		// TODO: crear stream
+
+		startStream(appId, bootstrapServers, schemaRegistry);
+	}
 }

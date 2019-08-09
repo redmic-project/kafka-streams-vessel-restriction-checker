@@ -1,15 +1,6 @@
 package es.redmic.vesselrestrictionchecker.utils;
 
-import java.util.List;
 import java.util.Properties;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
@@ -26,38 +17,9 @@ public class StreamsApplicationUtils {
 			SCHEMA_REGISTRY_VALUE_SUBJECT_NAME_STRATEGY = "value.subject.name.strategy";
 
 	// @formatter:on
-
-	public static CommandLine getCommandLineArgs(String[] args, List<Option> optionList) {
-
-		Options options = new Options();
-		
-		for (Option option : optionList) {
-			option.setRequired(true);
-			options.addOption(option);
-		}
-
-		CommandLineParser parser = new DefaultParser();
-		HelpFormatter formatter = new HelpFormatter();
-		CommandLine cmd = null;
-
-		try {
-			cmd = parser.parse(options, args);
-		} catch (ParseException e) {
-			System.out.println(e.getMessage());
-			formatter.printHelp("utility-name", options);
-
-			System.exit(1);
-		}
-
-		return cmd;
-	}
 	
-	public static Properties getStreamConfig(CommandLine cmd) {
+	public static Properties getStreamConfig(String appId, String bootstrapServers, String schemaRegistry) {
 
-        String appId = cmd.getOptionValue("appId");
-        String bootstrapServers = cmd.getOptionValue("bootstrapServers");
-    	String schemaRegistry = cmd.getOptionValue("schemaRegistry");
-    	
     	Properties config = new Properties();
     	
     	config.put(StreamsConfig.ROCKSDB_CONFIG_SETTER_CLASS_CONFIG, CustomRocksDBConfig.class);

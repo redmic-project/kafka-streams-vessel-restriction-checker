@@ -1,36 +1,48 @@
 package es.redmic.vesselrestrictionchecker.common;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 
 import es.redmic.vesselrestrictionchecker.utils.StreamsApplicationUtils;
 
 public abstract class StreamsApplicationBase {
-	
-	@SuppressWarnings("serial")
-	protected static ArrayList<Option> commandLineBaseOptions = new ArrayList<Option>() {{
-	    add(new Option("appId", true, "stream application identifier"));
-	    add(new Option("bootstrapServers", true, "kafka servers"));
-	    add(new Option("schemaRegistry", true, "schema registry server"));
-	}};
-	
-	protected static StreamsBuilder builder = new StreamsBuilder();
-	
-	protected static void startStream(CommandLine cmd) {
-		
-		KafkaStreams streams = new KafkaStreams(builder.build(),
-        		StreamsApplicationUtils.getStreamConfig(cmd));
-        
-        streams.setUncaughtExceptionHandler(
-				(Thread thread, Throwable throwable) -> uncaughtException(thread, throwable, streams));
-        
-        streams.start();
 
-        addShutdownHookAndBlock(streams);
+	// @formatter:off
+
+	protected static final String APP_ID = "APP_ID",
+			BOOTSTRAP_SERVERS = "BOOTSTRAP_SERVERS",
+			SCHEMA_REGISTRY = "SCHEMA_REGISTRY";
+	// @formatter:on
+
+	@SuppressWarnings("serial")
+	protected static HashMap<String, Object> requiredVariablesBase = new HashMap<String, Object>() {
+		{
+			put(APP_ID, "Stream application identifier");
+			put(BOOTSTRAP_SERVERS, "Kafka servers");
+			put(SCHEMA_REGISTRY, "Schema registry server");
+		}
+	};
+
+	protected static StreamsBuilder builder = new StreamsBuilder();
+
+	protected static void startStream(String appId, String bootstrapServers, String schemaRegistry) {
+
+		System.out.format("Kafka streams starting...%n");
+		System.out.format("BootstrapServers: %s, SchemaRegistry: %s, AppId: %s%n", bootstrapServers, schemaRegistry,
+				appId);
+
+		KafkaStreams streams = new KafkaStreams(builder.build(),
+				StreamsApplicationUtils.getStreamConfig(appId, bootstrapServers, schemaRegistry));
+
+		streams.setUncaughtExceptionHandler(
+				(Thread thread, Throwable throwable) -> uncaughtException(thread, throwable, streams));
+
+		streams.start();
+
+		addShutdownHookAndBlock(streams);
 	}
 
 	protected static void addShutdownHookAndBlock(KafkaStreams streams) {
@@ -40,7 +52,7 @@ public abstract class StreamsApplicationBase {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("Parando stream por señal SIGTERM");
+				System.out.println("Stopping stream. SIGTERM signal");
 				streams.close();
 			}
 		}));
@@ -48,10 +60,27 @@ public abstract class StreamsApplicationBase {
 
 	protected static void uncaughtException(Thread thread, Throwable throwable, KafkaStreams streams) {
 
-		String msg = "Error no conocido en kafka stream. El stream dejará de funcionar "
-				+ throwable.getLocalizedMessage();
-		System.out.println(msg);
+		System.err.println("Error. The stream will stop working " + throwable.getLocalizedMessage());
 		throwable.printStackTrace();
 		streams.close();
+	}
+
+	protected static Map<String, Object> getEnvVariables(HashMap<String, Object> variablesRequired) {
+
+		Map<String, Object> envVariables = new HashMap<>();
+
+		for (String key : variablesRequired.keySet()) {
+
+			String value = System.getenv(key);
+
+			if (value == null) {
+				System.err.println("Error=Enviroment variable " + key + " not assigned. Description: "
+						+ variablesRequired.get(key));
+				System.exit(1);
+			}
+			envVariables.put(key, value);
+		}
+
+		return envVariables;
 	}
 }
