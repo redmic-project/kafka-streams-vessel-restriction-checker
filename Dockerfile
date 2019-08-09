@@ -7,5 +7,5 @@ LABEL maintainer="info@redmic.es"
 
 COPY /target/*.jar ./
 
-CMD ["java", "-cp", "./vesselrestrictionchecker.jar:./dependency/*", \
-	"es.redmic.kafkastreams.vesselrestrictionchecker.VesselRestrictionCheckerApplication"]
+CMD ["java", "-cp", "./vessel-restriction-checker.jar:./dependency/*", \
+	"es.redmic.vesselrestrictionchecker.VesselRestrictionCheckerApplication"]
