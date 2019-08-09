@@ -7,5 +7,7 @@ LABEL maintainer="info@redmic.es"
 
 COPY /target/*.jar ./
 
+COPY /target/dependency/*.jar ./dependency/
+
 CMD ["java", "-cp", "./vessel-restriction-checker.jar:./dependency/*", \
 	"es.redmic.vesselrestrictionchecker.VesselRestrictionCheckerApplication"]
