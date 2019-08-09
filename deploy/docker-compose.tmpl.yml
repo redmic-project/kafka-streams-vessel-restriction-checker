@@ -7,6 +7,9 @@ services:
       APP_ID: {{.Service.Name}}-{{.Task.Slot}}
       BOOTSTRAP_SERVERS:
       SCHEMA_REGISTRY:
+      AREAS_TOPIC:
+      POINTS_TOPIC:
+      RESULT_TOPIC:
       JAVA_OPTS:
     networks:
       kafka-net:
