@@ -10,16 +10,16 @@ import java.util.List;
 import org.junit.Test;
 import org.locationtech.spatial4j.exception.InvalidShapeException;
 
-import es.redmic.vesselrestrictionchecker.utils.GeoHashUtils;
+import es.redmic.vesselrestrictionchecker.utils.GeoUtils;
 
-public class GeoHashUtilsTest {
+public class GeoUtilsTest {
 
 	@Test
 	public void getGeoHashFromPoint_returnStringCode_whenPointIsValid() {
 
 		String codeExpected = "etj";
 
-		String result = GeoHashUtils.getGeoHash(28.554224326054886, -14.75341796875, 3);
+		String result = GeoUtils.getGeoHash(28.554224326054886, -14.75341796875, 3);
 
 		assertEquals(codeExpected, result);
 	}
@@ -27,13 +27,13 @@ public class GeoHashUtilsTest {
 	@Test(expected = InvalidShapeException.class)
 	public void getGeoHashFromPoint_throwException_whenPointIsNotValid() {
 
-		GeoHashUtils.getGeoHash(91.554224326054886, 190.75341796875, 3);
+		GeoUtils.getGeoHash(91.554224326054886, 190.75341796875, 3);
 	}
 	
 	@Test(expected = AssertionError.class)
 	public void getGeoHashFromPoint_throwException_whenPrecisionIsGreaterThanMaxLevels() throws InvalidShapeException, ParseException {
 
-		GeoHashUtils.getGeoHash(91.554224326054886, 190.75341796875, 6);
+		GeoUtils.getGeoHash(91.554224326054886, 190.75341796875, 6);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class GeoHashUtilsTest {
 
 		// @formatter:on
 
-		List<String> result = GeoHashUtils.getGeoHash(geometry_wkt, 3);
+		List<String> result = GeoUtils.getGeoHash(geometry_wkt, 3);
 
 		assertEquals(codeListExpected, result);
 	}
@@ -60,21 +60,21 @@ public class GeoHashUtilsTest {
 	@Test(expected = InvalidShapeException.class)
 	public void getGeoHashFromShape_throwException_whenShapeIsNotValid() throws InvalidShapeException, ParseException {
 
-		GeoHashUtils.getGeoHash("POINT(190.75341796875 91.554224326054886)", 3);
+		GeoUtils.getGeoHash("POINT(190.75341796875 91.554224326054886)", 3);
 	}
 	
 	@Test(expected = AssertionError.class)
 	public void getGeoHashFromShape_throwException_whenPrecisionIsGreaterThanMaxLevels() throws InvalidShapeException, ParseException {
 
-		GeoHashUtils.getGeoHash("POINT(190.75341796875 91.554224326054886)", 6);
+		GeoUtils.getGeoHash("POINT(190.75341796875 91.554224326054886)", 6);
 	}
 
 	@Test
 	public void getGeoHashFromPointAndgetGeoHashFromShape_returnEqualStringCode_whenPointAndShapeAreEquals() throws InvalidShapeException, ParseException {
 
-		String geoHashFromPoint = GeoHashUtils.getGeoHash(28.554224326054886, -14.75341796875, 3);
+		String geoHashFromPoint = GeoUtils.getGeoHash(28.554224326054886, -14.75341796875, 3);
 
-		List<String> geoHashFromShape = GeoHashUtils.getGeoHash("POINT(-14.75341796875 28.554224326054886)", 3);
+		List<String> geoHashFromShape = GeoUtils.getGeoHash("POINT(-14.75341796875 28.554224326054886)", 3);
 
 		assertEquals(1, geoHashFromShape.size());
 		assertEquals(geoHashFromPoint, geoHashFromShape.get(0));
