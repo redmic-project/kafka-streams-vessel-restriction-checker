@@ -33,6 +33,7 @@
 		<lucene-spatial-extras.version>8.2.0</lucene-spatial-extras.version>
 		<jts-core.version>1.16.1</jts-core.version>
 		<joda-time.version>2.10.3</joda-time.version>
+		<slf4j.version>1.7.28</slf4j.version>
 		<junit.version>4.12</junit.version>
 		<jacoco.version>0.8.1</jacoco.version>
 	</properties>
@@ -96,7 +97,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-spatial-extras -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-spatial-extras</artifactId>
@@ -108,11 +108,26 @@
 			<artifactId>jts-core</artifactId>
 			<version>${jts-core.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>${joda-time.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<!-- Tests -->
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
