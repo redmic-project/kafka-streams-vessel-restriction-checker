@@ -13,7 +13,7 @@ public class AvroUtils {
 
 	public static Object getSpecificRecordProperty(SpecificRecord record, String name) {
 
-		return record.get(record.getSchema().getIndexNamed(name));
+		return record.get(record.getSchema().getField(name).pos());
 	}
 
 	public static HashMap<String, GenericRecord> aggregateGenericRecordInMap(String k, GenericRecord v,
