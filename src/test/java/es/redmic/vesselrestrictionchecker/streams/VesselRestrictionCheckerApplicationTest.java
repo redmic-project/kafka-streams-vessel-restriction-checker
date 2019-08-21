@@ -88,7 +88,8 @@ public class VesselRestrictionCheckerApplicationTest {
 	}
 
 	@Test
-	public void shouldFlushStoreForFirstInput() throws InvalidShapeException, ParseException, InterruptedException {
+	public void vesselRestrictionChecker_SendPointInAreaAlert_IfAreaContainsPoint()
+			throws InvalidShapeException, ParseException, InterruptedException {
 
 		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
 
@@ -106,6 +107,102 @@ public class VesselRestrictionCheckerApplicationTest {
 		OutputVerifier.compareKeyValue(
 				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
 				resultExpected.getVesselMmsi(), resultExpected);
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_NotSendAnyAlerts_IfAreaNotContainsPoint()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 45.320172290013765, -16.89305824790779);
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))");
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_Send2PointInAreaAlert_If2AreasContainsPoint()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))");
+
+		AreaDTO area2 = getAreaDTO("23",
+				"POLYGON((-17.094988975304886 28.097925030710133,-16.85740962960176 28.216580451923424,"
+						+ "-16.781878623742386 28.088233070532734,-17.094988975304886 28.097925030710133))");
+
+		AreaDTO area3 = getAreaDTO("24",
+				"POLYGON((-17.015338096398636 27.974287046117606,-16.71733394600801 27.907560606132442,"
+						+ "-16.93156734444551 27.86507687937166,-17.015338096398636 27.974287046117606))");
+
+		PointInAreaAlert pointInAreaAlert = getPointInAreaAlert(ais, area);
+
+		PointInAreaAlert pointInAreaAlert2 = getPointInAreaAlert(ais, area2);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area2.getId(), area2));
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area3.getId(), area3));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		OutputVerifier.compareKeyValue(
+				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
+				pointInAreaAlert.getVesselMmsi(), pointInAreaAlert);
+
+		OutputVerifier.compareKeyValue(
+				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
+				pointInAreaAlert2.getVesselMmsi(), pointInAreaAlert2);
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_SendOnlyOnePointInAreaAlert_IfOverwriteSecondArea()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))");
+
+		AreaDTO area2 = getAreaDTO("23",
+				"POLYGON((-17.094988975304886 28.097925030710133,-16.85740962960176 28.216580451923424,"
+						+ "-16.781878623742386 28.088233070532734,-17.094988975304886 28.097925030710133))");
+
+		AreaDTO area3 = getAreaDTO("23",
+				"POLYGON((-17.015338096398636 27.974287046117606,-16.71733394600801 27.907560606132442,"
+						+ "-16.93156734444551 27.86507687937166,-17.015338096398636 27.974287046117606))");
+
+		PointInAreaAlert pointInAreaAlert = getPointInAreaAlert(ais, area);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area2.getId(), area2));
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area3.getId(), area3));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		OutputVerifier.compareKeyValue(
+				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
+				pointInAreaAlert.getVesselMmsi(), pointInAreaAlert);
 
 		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
 	}
