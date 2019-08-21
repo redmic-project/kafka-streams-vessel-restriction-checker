@@ -22,7 +22,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.locationtech.spatial4j.exception.InvalidShapeException;
 import org.locationtech.spatial4j.shape.Shape;
-import org.locationtech.spatial4j.shape.SpatialRelation;
 
 import es.redmic.vesselrestrictionchecker.avro.hashmapserde.HashMapSerde;
 import es.redmic.vesselrestrictionchecker.common.StreamsApplicationBase;
@@ -202,7 +201,7 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 			// TODO: analizar si es necesario seguir procesando elementos una vez encontrada
 			// un área.
 			// Al menos no seguir procesando elementos de la misma área
-			if (area.relate(point) == SpatialRelation.CONTAINS) {
+			if (GeoUtils.shapeContainsGeometry(area, point)) {
 
 				// Se crea una alerta con la info básica del punto y del área donde se encuentra
 				PointInAreaAlert pointInAreaAlert = new PointInAreaAlert();

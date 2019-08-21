@@ -17,6 +17,7 @@ import org.locationtech.spatial4j.io.WKTReader;
 import org.locationtech.spatial4j.io.jts.JtsWKTWriter;
 import org.locationtech.spatial4j.shape.Point;
 import org.locationtech.spatial4j.shape.Shape;
+import org.locationtech.spatial4j.shape.SpatialRelation;
 
 public class GeoUtils {
 
@@ -117,5 +118,10 @@ public class GeoUtils {
 			return (String) AvroUtils.getSpecificRecordProperty(value, "geometry");
 		}
 		return null;
+	}
+
+	public static boolean shapeContainsGeometry(Shape shape1, Shape shape2) {
+		// The shape1 contains the target geometry.
+		return (shape1.relate(shape2) == SpatialRelation.CONTAINS);
 	}
 }
