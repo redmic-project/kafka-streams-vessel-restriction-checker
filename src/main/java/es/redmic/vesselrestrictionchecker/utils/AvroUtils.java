@@ -17,14 +17,15 @@ public class AvroUtils {
 	}
 
 	public static HashMap<String, GenericRecord> aggregateGenericRecordInMap(String k, GenericRecord v,
-			HashMap<String, GenericRecord> map) {
-		map.put(k, v);
+			HashMap<String, GenericRecord> map, String aggregateKey) {
+		map.put(v.get(aggregateKey).toString(), v);
 		return map;
 	}
 
 	public static GenericRecord getGenericRecordFromClass(Type classs) {
 
 		Schema schema = ReflectData.get().getSchema(classs);
+
 		return new GenericData.Record(schema);
 	}
 }
