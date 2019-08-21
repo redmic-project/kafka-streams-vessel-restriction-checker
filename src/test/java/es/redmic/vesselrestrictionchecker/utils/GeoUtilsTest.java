@@ -1,6 +1,8 @@
 package es.redmic.vesselrestrictionchecker.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -9,8 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.locationtech.spatial4j.exception.InvalidShapeException;
-
-import es.redmic.vesselrestrictionchecker.utils.GeoUtils;
+import org.locationtech.spatial4j.shape.Shape;
 
 public class GeoUtilsTest {
 
@@ -29,15 +30,17 @@ public class GeoUtilsTest {
 
 		GeoUtils.getGeoHash(91.554224326054886, 190.75341796875, 3);
 	}
-	
+
 	@Test(expected = AssertionError.class)
-	public void getGeoHashFromPoint_throwException_whenPrecisionIsGreaterThanMaxLevels() throws InvalidShapeException, ParseException {
+	public void getGeoHashFromPoint_throwException_whenPrecisionIsGreaterThanMaxLevels()
+			throws InvalidShapeException, ParseException {
 
 		GeoUtils.getGeoHash(91.554224326054886, 190.75341796875, 6);
 	}
 
 	@Test
-	public void getGeoHashFromShape_returnStringCodeList_whenshapeIsValid() throws InvalidShapeException, ParseException {
+	public void getGeoHashFromShape_returnStringCodeList_whenshapeIsValid()
+			throws InvalidShapeException, ParseException {
 
 		// @formatter:off
 
@@ -62,15 +65,17 @@ public class GeoUtilsTest {
 
 		GeoUtils.getGeoHash("POINT(190.75341796875 91.554224326054886)", 3);
 	}
-	
+
 	@Test(expected = AssertionError.class)
-	public void getGeoHashFromShape_throwException_whenPrecisionIsGreaterThanMaxLevels() throws InvalidShapeException, ParseException {
+	public void getGeoHashFromShape_throwException_whenPrecisionIsGreaterThanMaxLevels()
+			throws InvalidShapeException, ParseException {
 
 		GeoUtils.getGeoHash("POINT(190.75341796875 91.554224326054886)", 6);
 	}
 
 	@Test
-	public void getGeoHashFromPointAndgetGeoHashFromShape_returnEqualStringCode_whenPointAndShapeAreEquals() throws InvalidShapeException, ParseException {
+	public void getGeoHashFromPointAndgetGeoHashFromShape_returnEqualStringCode_whenPointAndShapeAreEquals()
+			throws InvalidShapeException, ParseException {
 
 		String geoHashFromPoint = GeoUtils.getGeoHash(28.554224326054886, -14.75341796875, 3);
 
@@ -78,5 +83,45 @@ public class GeoUtilsTest {
 
 		assertEquals(1, geoHashFromShape.size());
 		assertEquals(geoHashFromPoint, geoHashFromShape.get(0));
+	}
+
+	@Test
+	public void shapeContainsGeometry_ReturnTrue_IfAreaContainsPoint() throws InvalidShapeException, ParseException {
+
+		Shape pointShape = GeoUtils.getShapeFromWKT("POINT(-16.89305824790779 28.123415162762214)");
+
+		Shape areaShape = GeoUtils
+				.getShapeFromWKT("POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ " -16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ " -17.115923627143275 28.26107051182232))");
+
+		assertTrue(GeoUtils.shapeContainsGeometry(areaShape, pointShape));
+	}
+
+	@Test
+	public void shapeContainsGeometry_ReturnFalse_IfAreaNoContainsPoint() throws InvalidShapeException, ParseException {
+
+		Shape pointShape = GeoUtils.getShapeFromWKT("POINT(-17.89305824790779 28.123415162762214)");
+
+		Shape areaShape = GeoUtils
+				.getShapeFromWKT("POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ " -16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ " -17.115923627143275 28.26107051182232))");
+
+		assertFalse(GeoUtils.shapeContainsGeometry(areaShape, pointShape));
+	}
+
+	@Test
+	public void shapeContainsGeometry_ReturnTrue_IfAreaAndPointIntersect()
+			throws InvalidShapeException, ParseException {
+
+		Shape pointShape = GeoUtils.getShapeFromWKT("POINT(-17.115923627143275 28.26107051182232)");
+
+		Shape areaShape = GeoUtils
+				.getShapeFromWKT("POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ " -16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ " -17.115923627143275 28.26107051182232))");
+
+		assertTrue(GeoUtils.shapeContainsGeometry(areaShape, pointShape));
 	}
 }
