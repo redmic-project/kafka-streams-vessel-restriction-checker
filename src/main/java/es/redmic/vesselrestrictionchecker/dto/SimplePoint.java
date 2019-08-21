@@ -1,7 +1,5 @@
 package es.redmic.vesselrestrictionchecker.dto;
 
-import org.joda.time.DateTime;
-
 public class SimplePoint {
 
 	private String mmsi;
@@ -12,7 +10,7 @@ public class SimplePoint {
 
 	private String name;
 
-	private DateTime dateTime;
+	private long dateTime;
 
 	private Integer vesselType;
 
@@ -48,11 +46,11 @@ public class SimplePoint {
 		this.name = name;
 	}
 
-	public DateTime getDateTime() {
+	public long getDateTime() {
 		return dateTime;
 	}
 
-	public void setDateTime(DateTime dateTime) {
+	public void setDateTime(long dateTime) {
 		this.dateTime = dateTime;
 	}
 
