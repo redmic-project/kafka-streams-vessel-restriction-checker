@@ -45,7 +45,13 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 
 	private static final String GEO_HASH_KEY = "geohash",
 			RESULT_GEOMETRY_PROPERTY = "geometry",
-			RESULT_VESSEL_MMSI_PROPERTY = "vesselMmsi";
+			RESULT_VESSEL_MMSI_PROPERTY = "vesselMmsi",
+			VESSEL_TYPE_PROPERTY = "vesselType",
+			MAX_SPEED_PROPERTY = "maxSpeed",
+			VESSEL_TYPES_RESTRICTED_PROPERTY = "vesselTypesRestricted",
+			VESSEL_SPEED_PROPERTY = "sog";
+
+	private static final Double SPEED_TOLERANCE = 2.0;
 	
 	// @formatter:on
 
@@ -97,6 +103,8 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 						Joined.valueSerde(getGenericAvroSerde()))
 				.flatMapValues(value -> value).selectKey((k, v) -> v.get(RESULT_VESSEL_MMSI_PROPERTY))
 				.to(resultTopic, Produced.with(null, getSpecificAvroSerde()));
+		// TODO: Agregar alertas en los últimos x minutos. De esta forma se evitarán
+		// falsas alarmas.
 
 		return builder.build();
 	}
@@ -128,8 +136,9 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 		// Se crea un nuevo registro con el geohash code y solo con la info necesaria
 		avroRecord.put("mmsi", AvroUtils.getSpecificRecordProperty(value, "mmsi").toString());
 		avroRecord.put("name", AvroUtils.getSpecificRecordProperty(value, "name").toString());
-		avroRecord.put("dateTime", Long.parseLong(AvroUtils.getSpecificRecordProperty(value, "tstamp").toString()));
-		avroRecord.put("vesselType", Integer.parseInt(AvroUtils.getSpecificRecordProperty(value, "type").toString()));
+		avroRecord.put("dateTime", AvroUtils.getSpecificRecordProperty(value, "tstamp"));
+		avroRecord.put("vesselType", AvroUtils.getSpecificRecordProperty(value, "type"));
+		avroRecord.put("sog", AvroUtils.getSpecificRecordProperty(value, "sog"));
 
 		return avroRecord;
 	}
@@ -156,6 +165,9 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 					avroRecord.put(RESULT_GEOMETRY_PROPERTY, geometry.toString());
 					avroRecord.put("id", AvroUtils.getSpecificRecordProperty(value, "id").toString());
 					avroRecord.put("name", AvroUtils.getSpecificRecordProperty(value, "name").toString());
+					avroRecord.put(VESSEL_TYPES_RESTRICTED_PROPERTY,
+							AvroUtils.getSpecificRecordProperty(value, VESSEL_TYPES_RESTRICTED_PROPERTY));
+					avroRecord.put(MAX_SPEED_PROPERTY, AvroUtils.getSpecificRecordProperty(value, MAX_SPEED_PROPERTY));
 					avroRecord.put(GEO_HASH_KEY, geoHash);
 					values.add(avroRecord);
 				}
@@ -201,7 +213,7 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 			// TODO: analizar si es necesario seguir procesando elementos una vez encontrada
 			// un área.
 			// Al menos no seguir procesando elementos de la misma área
-			if (GeoUtils.shapeContainsGeometry(area, point)) {
+			if (GeoUtils.shapeContainsGeometry(area, point) && !fulfillNavigationConstraints(pointRecord, areaRecord)) {
 
 				// Se crea una alerta con la info básica del punto y del área donde se encuentra
 				PointInAreaAlert pointInAreaAlert = new PointInAreaAlert();
@@ -211,14 +223,50 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 				pointInAreaAlert.setDateTime(
 						new DateTime(Long.parseLong(pointRecord.get("dateTime").toString()), DateTimeZone.UTC));
 				pointInAreaAlert.setVesselType(Integer.parseInt(pointRecord.get("vesselType").toString()));
+				pointInAreaAlert.setSog((Double) pointRecord.get("sog"));
 				pointInAreaAlert.setAreaId(areaRecord.get("id").toString());
 				pointInAreaAlert.setAreaName(areaRecord.get("name").toString());
 
 				result.add(pointInAreaAlert);
 			}
-
 		}
 		return result;
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	private boolean fulfillNavigationConstraints(GenericRecord pointRecord, GenericRecord areaRecord) {
+
+		Integer vesselType = (Integer) pointRecord.get(VESSEL_TYPE_PROPERTY);
+
+		Double vesselSpeed = pointRecord.get(VESSEL_SPEED_PROPERTY) != null
+				? ((Double) pointRecord.get(VESSEL_SPEED_PROPERTY))
+				: null;
+
+		List<?> vesselTypesRestricted = areaRecord.get(VESSEL_TYPES_RESTRICTED_PROPERTY) != null
+				? ((List) areaRecord.get(VESSEL_TYPES_RESTRICTED_PROPERTY))
+				: null;
+
+		Double maxSpeed = areaRecord.get(MAX_SPEED_PROPERTY) != null ? ((Double) areaRecord.get(MAX_SPEED_PROPERTY))
+				: null;
+
+		boolean fulfillVesselTypeConstraintResult = fulfillVesselTypeConstraint(vesselType, vesselTypesRestricted),
+				fulfillSpeedConstraintResult = fulfillSpeedConstraint(vesselSpeed, maxSpeed);
+
+		return (fulfillVesselTypeConstraintResult && fulfillSpeedConstraintResult)
+				|| (vesselTypesRestricted == null && maxSpeed != null && fulfillSpeedConstraintResult);
+	}
+
+	private boolean fulfillVesselTypeConstraint(Integer vesselType, List<?> vesselTypesRestricted) {
+
+		if (vesselTypesRestricted == null || vesselTypesRestricted.size() == 0)
+			return false;
+
+		return (vesselTypesRestricted.stream().filter(item -> item.toString().equals(vesselType.toString()))
+				.count() == 0);
+	}
+
+	private boolean fulfillSpeedConstraint(Double vesselSpeed, Double maxSpeed) {
+		return maxSpeed == null || vesselSpeed != null && (vesselSpeed + SPEED_TOLERANCE <= maxSpeed);
 	}
 
 	public static void main(String[] args) {

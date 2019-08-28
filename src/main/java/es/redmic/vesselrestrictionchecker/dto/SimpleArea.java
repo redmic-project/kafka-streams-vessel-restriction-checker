@@ -1,5 +1,9 @@
 package es.redmic.vesselrestrictionchecker.dto;
 
+import java.util.List;
+
+import org.apache.avro.reflect.Nullable;
+
 public class SimpleArea {
 
 	private String id;
@@ -9,6 +13,12 @@ public class SimpleArea {
 	private String geohash;
 
 	private String name;
+
+	@Nullable
+	private List<String> vesselTypesRestricted;
+
+	@Nullable
+	private Double maxSpeed;
 
 	public String getId() {
 		return id;
@@ -40,5 +50,21 @@ public class SimpleArea {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<String> getVesselTypesRestricted() {
+		return vesselTypesRestricted;
+	}
+
+	public void setVesselTypesRestricted(List<String> vesselTypesRestricted) {
+		this.vesselTypesRestricted = vesselTypesRestricted;
+	}
+
+	public Double getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	public void setMaxSpeed(Double maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 }

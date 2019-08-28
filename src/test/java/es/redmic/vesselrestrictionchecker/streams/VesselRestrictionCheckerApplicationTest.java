@@ -4,7 +4,9 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.kafka.common.serialization.Deserializer;
@@ -207,6 +209,136 @@ public class VesselRestrictionCheckerApplicationTest {
 		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
 	}
 
+	@Test
+	public void vesselRestrictionChecker_SendPointInAreaAlert_IfAreaContainsVesselAndNotFulfillVesselTypeConstraint()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		List<String> vesselTypesRestricted = new ArrayList<>();
+		vesselTypesRestricted.add("2");
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))",
+				null, vesselTypesRestricted);
+
+		PointInAreaAlert resultExpected = getPointInAreaAlert(ais, area);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		OutputVerifier.compareKeyValue(
+				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
+				resultExpected.getVesselMmsi(), resultExpected);
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_NoSendAnyAlert_IfAreaContainsVesselAndFulfillVesselTypeConstraint()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		List<String> vesselTypesRestricted = new ArrayList<>();
+		vesselTypesRestricted.add("4");
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))",
+				null, vesselTypesRestricted);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_SendPointInAreaAlert_IfAreaContainsVesselAndNotFulfillSpeedConstraint()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		Double maxSpeed = 8.0;
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))",
+				maxSpeed, null);
+
+		PointInAreaAlert resultExpected = getPointInAreaAlert(ais, area);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		OutputVerifier.compareKeyValue(
+				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
+				resultExpected.getVesselMmsi(), resultExpected);
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_NoSendAnyAlert_IfAreaContainsVesselAndFulfillSpeedConstraint()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		Double maxSpeed = 30.0;
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))",
+				maxSpeed, null);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	@Test
+	public void vesselRestrictionChecker_SendPointInAreaAlert_IfAreaContainsVesselAndNotFulfillConstraints()
+			throws InvalidShapeException, ParseException, InterruptedException {
+
+		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
+
+		Double maxSpeed = 8.0;
+
+		List<String> vesselTypesRestricted = new ArrayList<>();
+		vesselTypesRestricted.add("2");
+
+		AreaDTO area = getAreaDTO("22",
+				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
+						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
+						+ "-17.115923627143275 28.26107051182232))",
+				maxSpeed, vesselTypesRestricted);
+
+		PointInAreaAlert resultExpected = getPointInAreaAlert(ais, area);
+
+		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
+
+		testDriver.pipeInput(aisTrackingDTORecordFactory.create(POINT_TOPIC, ais.getMmsi().toString(), ais));
+
+		OutputVerifier.compareKeyValue(
+				testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer),
+				resultExpected.getVesselMmsi(), resultExpected);
+
+		assertNull(testDriver.readOutput(RESULT_TOPIC, stringDeserializer, pointInAreaAlertDeserializer));
+	}
+
+	// TODO: Añadir más tests de posibles casos que vayan apareciendo
+
 	private AISTrackingDTO getAISTrackingDTO(int mmsi, double latitude, double longitude) {
 
 		AISTrackingDTO ais = new AISTrackingDTO();
@@ -216,8 +348,17 @@ public class VesselRestrictionCheckerApplicationTest {
 		ais.setName("Santa María");
 		ais.setType(2);
 		ais.setTstamp(DateTime.now());
+		ais.setSog(15.0);
 
 		return ais;
+	}
+
+	private AreaDTO getAreaDTO(String id, String geometry, Double maxSpeed, List<String> vesselTypesRestricted) {
+
+		AreaDTO area = getAreaDTO(id, geometry);
+		area.setMaxSpeed(maxSpeed);
+		area.setVesselTypesRestricted(vesselTypesRestricted);
+		return area;
 	}
 
 	private AreaDTO getAreaDTO(String id, String geometry) {
@@ -239,6 +380,7 @@ public class VesselRestrictionCheckerApplicationTest {
 		resultExpected.setVesselType(ais.getType());
 		resultExpected.setGeometry(GeoUtils.getWKTFromLatLon(ais.getLatitude(), ais.getLongitude()));
 		resultExpected.setDateTime(new DateTime(ais.getTstamp(), DateTimeZone.UTC));
+		resultExpected.setSog(ais.getSog());
 
 		return resultExpected;
 	}

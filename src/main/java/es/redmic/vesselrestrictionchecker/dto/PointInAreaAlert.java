@@ -18,7 +18,8 @@ public class PointInAreaAlert extends org.apache.avro.specific.SpecificRecordBas
 		+ "{\"name\":\"vesselName\",\"type\":\"string\"},"
 		+ "{\"name\":\"geometry\",\"type\":\"string\"},"
 		+ "{\"name\":\"dateTime\",\"type\":{ \"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},"
-		+ "{\"name\":\"vesselType\",\"type\":\"int\"}]}");
+		+ "{\"name\":\"vesselType\",\"type\":\"int\"},"
+		+ "{\"name\":\"sog\",\"type\":[\"double\", \"null\"]}]}");
 	//@formatter:on
 
 	private String areaId;
@@ -34,6 +35,8 @@ public class PointInAreaAlert extends org.apache.avro.specific.SpecificRecordBas
 	private DateTime dateTime;
 
 	private Integer vesselType;
+
+	private Double sog;
 
 	public String getAreaId() {
 		return areaId;
@@ -91,6 +94,14 @@ public class PointInAreaAlert extends org.apache.avro.specific.SpecificRecordBas
 		this.vesselType = vesselType;
 	}
 
+	public Double getSog() {
+		return sog;
+	}
+
+	public void setSog(Double sog) {
+		this.sog = sog;
+	}
+
 	@Override
 	public Schema getSchema() {
 		return SCHEMA$;
@@ -113,6 +124,8 @@ public class PointInAreaAlert extends org.apache.avro.specific.SpecificRecordBas
 			return dateTime.getMillis();
 		case 6:
 			return vesselType;
+		case 7:
+			return sog;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
@@ -141,6 +154,9 @@ public class PointInAreaAlert extends org.apache.avro.specific.SpecificRecordBas
 			break;
 		case 6:
 			vesselType = (java.lang.Integer) value;
+			break;
+		case 7:
+			sog = value != null ? (Double) value : null;
 			break;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");

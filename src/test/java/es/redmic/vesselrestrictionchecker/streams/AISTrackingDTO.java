@@ -16,7 +16,8 @@ public class AISTrackingDTO extends org.apache.avro.specific.SpecificRecordBase
 		+ "{\"name\":\"latitude\",\"type\":\"double\"},"
 		+ "{\"name\":\"longitude\",\"type\":\"double\"},"
 		+ "{\"name\":\"type\",\"type\":\"int\"},"
-		+ "{\"name\":\"name\",\"type\":\"string\"}]}");
+		+ "{\"name\":\"name\",\"type\":\"string\"},"
+		+ "{\"name\":\"sog\",\"type\":[\"double\", \"null\"]}]}");
 	//@formatter:on
 
 	private Integer mmsi;
@@ -30,6 +31,8 @@ public class AISTrackingDTO extends org.apache.avro.specific.SpecificRecordBase
 	private Integer type = 0;
 
 	private String name;
+
+	private Double sog;
 
 	public AISTrackingDTO() {
 	}
@@ -86,6 +89,14 @@ public class AISTrackingDTO extends org.apache.avro.specific.SpecificRecordBase
 		this.name = name;
 	}
 
+	public Double getSog() {
+		return sog;
+	}
+
+	public void setSog(Double sog) {
+		this.sog = sog;
+	}
+
 	@Override
 	public org.apache.avro.Schema getSchema() {
 		return SCHEMA$;
@@ -107,6 +118,8 @@ public class AISTrackingDTO extends org.apache.avro.specific.SpecificRecordBase
 			return type;
 		case 5:
 			return name;
+		case 6:
+			return sog;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");
 		}
@@ -133,6 +146,9 @@ public class AISTrackingDTO extends org.apache.avro.specific.SpecificRecordBase
 			break;
 		case 5:
 			name = value$ != null ? value$.toString() : null;
+			break;
+		case 6:
+			sog = value$ != null ? (Double) value$ : null;
 			break;
 		default:
 			throw new org.apache.avro.AvroRuntimeException("Bad index");

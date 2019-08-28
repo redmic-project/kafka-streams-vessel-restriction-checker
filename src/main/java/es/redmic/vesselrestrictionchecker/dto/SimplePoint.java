@@ -14,6 +14,8 @@ public class SimplePoint {
 
 	private Integer vesselType;
 
+	private Double sog;
+
 	public String getMmsi() {
 		return mmsi;
 	}
@@ -60,5 +62,13 @@ public class SimplePoint {
 
 	public void setVesselType(Integer vesselType) {
 		this.vesselType = vesselType;
+	}
+
+	public Double getSog() {
+		return sog;
+	}
+
+	public void setSog(Double sog) {
+		this.sog = sog;
 	}
 }
