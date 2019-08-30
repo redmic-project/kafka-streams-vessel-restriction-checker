@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
-import org.apache.avro.specific.SpecificRecord;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.lucene.spatial.prefix.tree.CellIterator;
 import org.apache.lucene.spatial.prefix.tree.GeohashPrefixTree;
 import org.locationtech.spatial4j.context.SpatialContext;
@@ -93,7 +93,7 @@ public class GeoUtils {
 	 * @throws InvalidShapeException
 	 * @throws ParseException
 	 */
-	public static String getWKTGeometry(SpecificRecord value) throws InvalidShapeException, ParseException {
+	public static String getWKTGeometry(GenericRecord value) throws InvalidShapeException, ParseException {
 
 		// Comprueba si la geometría viene en los diferentes formatos soportados.
 
@@ -101,21 +101,22 @@ public class GeoUtils {
 
 		if (schema.getField("longitude") != null && schema.getField("latitude") != null) {
 
-			Object lon = AvroUtils.getSpecificRecordProperty(value, "longitude");
-			Object lat = AvroUtils.getSpecificRecordProperty(value, "latitude");
+			Object lon = value.get("longitude");
+			Object lat = value.get("latitude");
 
 			return getWKTFromLatLon((double) lat, (double) lon);
 		}
 		if (schema.getField("x") != null && schema.getField("y") != null) {
 
-			Object lon = AvroUtils.getSpecificRecordProperty(value, "x");
-			Object lat = AvroUtils.getSpecificRecordProperty(value, "y");
+			Object lon = value.get("x");
+			Object lat = value.get("y");
 
 			return getWKTFromLatLon((double) lat, (double) lon);
 		}
+		// TODO: añadir compatibilidad con GeoJson
 		if (schema.getField("geometry") != null) {
 
-			return (String) AvroUtils.getSpecificRecordProperty(value, "geometry");
+			return value.get("geometry").toString();
 		}
 		return null;
 	}
