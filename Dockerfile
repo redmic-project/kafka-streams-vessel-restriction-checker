@@ -5,6 +5,8 @@ FROM ${PARENT_IMAGE_NAME}:${PARENT_IMAGE_TAG}
 
 LABEL maintainer="info@redmic.es"
 
+RUN apk update && apk add --no-cache libc6-compat
+
 COPY /target/*.jar ./
 
 COPY /target/dependency/*.jar ./dependency/
