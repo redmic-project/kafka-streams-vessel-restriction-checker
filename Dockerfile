@@ -5,7 +5,9 @@ FROM ${PARENT_IMAGE_NAME}:${PARENT_IMAGE_TAG}
 
 LABEL maintainer="info@redmic.es"
 
-RUN apk add --no-cache libstdc++
+RUN apk add --no-cache \
+	libstdc++=8.3.0-r0 \
+	libc6-compat=1.1.22-r3
 
 COPY /target/*.jar ./
 
