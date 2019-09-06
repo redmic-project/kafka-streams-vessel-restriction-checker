@@ -134,7 +134,11 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 		}
 		// Se crea un nuevo registro con el geohash code y solo con la info necesaria
 		avroRecord.put("mmsi", value.get("mmsi").toString());
-		avroRecord.put("name", value.get("name").toString());
+
+		Object name = value.get("name");
+		if (name != null)
+			avroRecord.put("name", name.toString());
+
 		avroRecord.put("dateTime", value.get("tstamp"));
 		avroRecord.put("vesselType", value.get("type"));
 		avroRecord.put("sog", value.get("sog"));
@@ -161,9 +165,9 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 				for (String geoHash : geoHashList) {
 					// Se crean nuevos registros con el geohash code y solo con la info necesaria
 					GenericRecord avroRecord = AvroUtils.getGenericRecordFromClass(SimpleArea.class);
-					avroRecord.put(RESULT_GEOMETRY_PROPERTY, geometry.toString());
-					avroRecord.put("id", value.get("id").toString());
-					avroRecord.put("name", value.get("name").toString());
+					avroRecord.put(RESULT_GEOMETRY_PROPERTY, geometry);
+					avroRecord.put("id", value.get("id"));
+					avroRecord.put("name", value.get("name"));
 					avroRecord.put(VESSEL_TYPES_RESTRICTED_PROPERTY, value.get(VESSEL_TYPES_RESTRICTED_PROPERTY));
 					avroRecord.put(MAX_SPEED_PROPERTY, value.get(MAX_SPEED_PROPERTY));
 					avroRecord.put(GEO_HASH_KEY, geoHash);
@@ -216,11 +220,18 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 				// Se crea una alerta con la info básica del punto y del área donde se encuentra
 				PointInAreaAlert pointInAreaAlert = new PointInAreaAlert();
 				pointInAreaAlert.setVesselMmsi(pointRecord.get("mmsi").toString());
-				pointInAreaAlert.setVesselName(pointRecord.get("name").toString());
+
+				Object name = pointRecord.get("name");
+				if (name != null)
+					pointInAreaAlert.setVesselName(name.toString());
 				pointInAreaAlert.setGeometry(pointRecord.get("geometry").toString());
 				pointInAreaAlert.setDateTime(
 						new DateTime(Long.parseLong(pointRecord.get("dateTime").toString()), DateTimeZone.UTC));
-				pointInAreaAlert.setVesselType(Integer.parseInt(pointRecord.get("vesselType").toString()));
+
+				Object vesselType = pointRecord.get("vesselType");
+				if (vesselType != null)
+					pointInAreaAlert.setVesselType(Integer.parseInt(vesselType.toString()));
+
 				pointInAreaAlert.setSog((Double) pointRecord.get("sog"));
 				pointInAreaAlert.setAreaId(areaRecord.get("id").toString());
 				pointInAreaAlert.setAreaName(areaRecord.get("name").toString());
