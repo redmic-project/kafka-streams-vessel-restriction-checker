@@ -1,5 +1,5 @@
-ARG PARENT_IMAGE_NAME openjdk
-ARG PARENT_IMAGE_TAG 14-alpine
+ARG PARENT_IMAGE_NAME=adoptopenjdk/openjdk8
+ARG PARENT_IMAGE_TAG=jdk8u222-b10-slim
 
 FROM ${PARENT_IMAGE_NAME}:${PARENT_IMAGE_TAG}
 
@@ -7,5 +7,7 @@ LABEL maintainer="info@redmic.es"
 
 COPY /target/*.jar ./
 
-CMD ["java", "-cp", "./vesselrestrictionchecker.jar:./dependency/*", \
-	"es.redmic.kafkastreams.vesselrestrictionchecker.VesselRestrictionCheckerApplication"]
+COPY /target/dependency/*.jar ./dependency/
+
+CMD ["java", "-cp", "./vessel-restriction-checker.jar:./dependency/*", \
+	"es.redmic.vesselrestrictionchecker.VesselRestrictionCheckerApplication"]

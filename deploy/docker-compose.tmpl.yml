@@ -4,9 +4,12 @@ services:
   vessel-restriction-checker:
     image: ${IMAGE_NAME}:${IMAGE_TAG:-latest}
     environment:
-      APP_ID: {{.Service.Name}}-{{.Task.Slot}}
+      APP_ID:
       BOOTSTRAP_SERVERS:
       SCHEMA_REGISTRY:
+      AREAS_TOPIC:
+      POINTS_TOPIC:
+      RESULT_TOPIC:
       JAVA_OPTS:
     networks:
       kafka-net:
@@ -16,7 +19,7 @@ services:
       replicas: 1
       restart_policy:
         delay: 10s
-      update_policy:
+      update_config:
         delay: 1m
       resources:
         limits:
