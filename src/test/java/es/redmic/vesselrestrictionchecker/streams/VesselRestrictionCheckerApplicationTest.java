@@ -38,7 +38,8 @@ public class VesselRestrictionCheckerApplicationTest {
 	private static final String POINT_TOPIC = "pointsTopic",
 			AREAS_TOPIC = "areasTopic",
 			RESULT_TOPIC = "resultTopic",
-			SCHEMA_REGISTRY_URL = "http://dummy";
+			SCHEMA_REGISTRY_URL = "http://dummy",
+			AUTO_OFFSET_RESET = "earliest";
 
 	// @formatter:on
 
@@ -71,7 +72,7 @@ public class VesselRestrictionCheckerApplicationTest {
 
 		Topology topology = app.getTopology(POINT_TOPIC, AREAS_TOPIC, RESULT_TOPIC);
 
-		Properties props = app.getKafkaProperties("appId", "localhost:9092");
+		Properties props = app.getKafkaProperties("appId", "localhost:9092", AUTO_OFFSET_RESET);
 
 		testDriver = new TopologyTestDriver(topology, props);
 
