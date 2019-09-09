@@ -1,5 +1,7 @@
 package es.redmic.vesselrestrictionchecker.dto;
 
+import org.apache.avro.reflect.Nullable;
+
 public class SimplePoint {
 
 	private String mmsi;
@@ -8,12 +10,15 @@ public class SimplePoint {
 
 	private String geohash;
 
+	@Nullable
 	private String name;
 
 	private long dateTime;
 
+	@Nullable
 	private Integer vesselType;
 
+	@Nullable
 	private Double sog;
 
 	public String getMmsi() {

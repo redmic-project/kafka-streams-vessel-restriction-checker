@@ -15,10 +15,10 @@ public class PointInAreaAlert extends org.apache.avro.specific.SpecificRecordBas
 		+ "{\"name\":\"areaId\",\"type\":\"string\"},"
 		+ "{\"name\":\"areaName\",\"type\":\"string\"},"
 		+ "{\"name\":\"vesselMmsi\",\"type\":\"string\"},"
-		+ "{\"name\":\"vesselName\",\"type\":\"string\"},"
+		+ "{\"name\":\"vesselName\",\"type\":[\"string\", \"null\"]},"
 		+ "{\"name\":\"geometry\",\"type\":\"string\"},"
 		+ "{\"name\":\"dateTime\",\"type\":{ \"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},"
-		+ "{\"name\":\"vesselType\",\"type\":\"int\"},"
+		+ "{\"name\":\"vesselType\",\"type\":[\"int\", \"null\"]},"
 		+ "{\"name\":\"sog\",\"type\":[\"double\", \"null\"]}]}");
 	//@formatter:on
 
