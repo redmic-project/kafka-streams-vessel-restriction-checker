@@ -16,11 +16,13 @@ public class StreamsApplicationUtils {
 	// @formatter:off
 
 	protected final static String SCHEMA_REGISTRY_URL_PROPERTY = "schema.registry.url",
-			SCHEMA_REGISTRY_VALUE_SUBJECT_NAME_STRATEGY = "value.subject.name.strategy";
+			SCHEMA_REGISTRY_VALUE_SUBJECT_NAME_STRATEGY = "value.subject.name.strategy",
+			AUTO_OFFSET_RESET = "auto.offset.reset";
 
 	// @formatter:on
 
-	public static Properties getStreamConfig(String appId, String bootstrapServers, String schemaRegistry) {
+	public static Properties getStreamConfig(String appId, String bootstrapServers, String schemaRegistry,
+			String autoOffsetReset) {
 
 		Properties config = new Properties();
 
@@ -28,7 +30,7 @@ public class StreamsApplicationUtils {
 		config.put(StreamsConfig.APPLICATION_ID_CONFIG, appId);
 		config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		// config.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
-
+		config.put(AUTO_OFFSET_RESET, autoOffsetReset);
 		config.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1); // commit as fast as possible
 
 		config.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,

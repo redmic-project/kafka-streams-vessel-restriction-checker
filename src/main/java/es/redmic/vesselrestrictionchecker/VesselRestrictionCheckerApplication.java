@@ -86,7 +86,8 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 				.reduce((aggValue, newValue) -> newValue, Materialized.with(null, getGenericAvroSerde())).toStream();
 
 		KStream<String, GenericRecord> areasKStreamEnriched = lastAreasKStream
-				.flatMapValues((value) -> enrichAreaWithGeoHash(value)).selectKey((key, value) -> getGeoHashKey(value));
+				.flatMapValues((value) -> enrichAreaWithGeoHash(value)).filter((k, v) -> (v != null))
+				.selectKey((key, value) -> getGeoHashKey(value));
 
 		KTable<String, HashMap<String, GenericRecord>> areasKTableAgg = areasKStreamEnriched
 				.groupByKey(Serialized.with(null, getGenericAvroSerde())).aggregate(HashMap<String, GenericRecord>::new,
@@ -95,7 +96,8 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 						Materialized.with(null, hashMapSerde));
 
 		KStream<String, GenericRecord> pointsStreamEnriched = pointsStream
-				.mapValues(value -> enrichPointWithGeoHash(value)).selectKey((k, v) -> getGeoHashKey(v));
+				.mapValues(value -> enrichPointWithGeoHash(value)).filter((k, v) -> (v != null))
+				.selectKey((k, v) -> getGeoHashKey(v));
 
 		pointsStreamEnriched
 				.join(areasKTableAgg, (point, areas) -> getPointInAreaAlert(point, areas),
@@ -289,7 +291,8 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
     			resultTopic = (String) env.get(RESULT_TOPIC),
 				appId = (String) env.get(APP_ID),
 				bootstrapServers = (String) env.get(BOOTSTRAP_SERVERS),
-				schemaRegistryUrl = (String) env.get(SCHEMA_REGISTRY);
+				schemaRegistryUrl = (String) env.get(SCHEMA_REGISTRY),
+				autoOffsetReset = (String) env.get(AUTO_OFFSET_RESET);
     	// @formatter:on
 
 		System.out.format("Load config...%n");
@@ -306,7 +309,7 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 
 		Topology topology = app.getTopology(pointsTopic, areasTopic, resultTopic);
 
-		Properties props = app.getKafkaProperties(appId, bootstrapServers);
+		Properties props = app.getKafkaProperties(appId, bootstrapServers, autoOffsetReset);
 
 		app.startStreams(topology, props);
 	}

@@ -32,7 +32,8 @@ public abstract class StreamsApplicationBase {
 
 	protected static final String APP_ID = "APP_ID",
 			BOOTSTRAP_SERVERS = "BOOTSTRAP_SERVERS",
-			SCHEMA_REGISTRY = "SCHEMA_REGISTRY";
+			SCHEMA_REGISTRY = "SCHEMA_REGISTRY",
+			AUTO_OFFSET_RESET = "AUTO_OFFSET_RESET";
 	// @formatter:on
 
 	@SuppressWarnings("serial")
@@ -41,6 +42,7 @@ public abstract class StreamsApplicationBase {
 			put(APP_ID, "Stream application identifier");
 			put(BOOTSTRAP_SERVERS, "Kafka servers");
 			put(SCHEMA_REGISTRY, "Schema registry server");
+			put(AUTO_OFFSET_RESET, "auto.offset.reset consumer property");
 		}
 	};
 
@@ -56,10 +58,10 @@ public abstract class StreamsApplicationBase {
 		addShutdownHookAndBlock(streams);
 	}
 
-	public Properties getKafkaProperties(String appId, String bootstrapServers) {
+	public Properties getKafkaProperties(String appId, String bootstrapServers, String autoOffsetReset) {
 
 		// Sobrescribir método o añadir aquí properties específicas si fuera necesario
-		return StreamsApplicationUtils.getStreamConfig(appId, bootstrapServers, schemaRegistryUrl);
+		return StreamsApplicationUtils.getStreamConfig(appId, bootstrapServers, schemaRegistryUrl, autoOffsetReset);
 	}
 
 	protected void addShutdownHookAndBlock(KafkaStreams streams) {
