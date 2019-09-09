@@ -264,7 +264,8 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 				fulfillSpeedConstraintResult = fulfillSpeedConstraint(vesselSpeed, maxSpeed);
 
 		return (fulfillVesselTypeConstraintResult && fulfillSpeedConstraintResult)
-				|| (vesselTypesRestricted == null && maxSpeed != null && fulfillSpeedConstraintResult);
+				|| ((vesselTypesRestricted == null || vesselTypesRestricted.size() == 0) && maxSpeed != null
+						&& fulfillSpeedConstraintResult);
 	}
 
 	private boolean fulfillVesselTypeConstraint(Integer vesselType, List<?> vesselTypesRestricted) {
@@ -277,7 +278,7 @@ public class VesselRestrictionCheckerApplication extends StreamsApplicationBase 
 	}
 
 	private boolean fulfillSpeedConstraint(Double vesselSpeed, Double maxSpeed) {
-		return maxSpeed == null || vesselSpeed != null && (vesselSpeed + SPEED_TOLERANCE <= maxSpeed);
+		return maxSpeed == null || (vesselSpeed != null && (vesselSpeed + SPEED_TOLERANCE <= maxSpeed));
 	}
 
 	public static void main(String[] args) {

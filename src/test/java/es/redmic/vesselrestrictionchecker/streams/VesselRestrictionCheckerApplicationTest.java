@@ -293,13 +293,13 @@ public class VesselRestrictionCheckerApplicationTest {
 
 		AISTrackingDTO ais = getAISTrackingDTO(2, 28.123415162762214, -16.89305824790779);
 
-		Double maxSpeed = 30.0;
+		Double maxSpeed = 18.0;
 
 		AreaDTO area = getAreaDTO("22",
 				"POLYGON((-17.115923627143275 28.26107051182232,-16.86186478925265 28.268327827045535,"
 						+ "-16.7053096134714 27.970373554893733,-17.047259076362025 27.974012125154626,"
 						+ "-17.115923627143275 28.26107051182232))",
-				maxSpeed, null);
+				maxSpeed, new ArrayList<>());
 
 		testDriver.pipeInput(areaDTORecordFactory.create(AREAS_TOPIC, area.getId(), area));
 
