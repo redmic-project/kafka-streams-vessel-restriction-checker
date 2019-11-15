@@ -2,6 +2,7 @@ package es.redmic.vesselrestrictionchecker.utils;
 
 import java.util.Properties;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.errors.LogAndContinueExceptionHandler;
@@ -32,6 +33,9 @@ public class StreamsApplicationUtils {
 		// config.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
 		config.put(AUTO_OFFSET_RESET, autoOffsetReset);
 		config.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1); // commit as fast as possible
+
+		config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);
+		config.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 15000);
 
 		config.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
 				LogAndContinueExceptionHandler.class);
