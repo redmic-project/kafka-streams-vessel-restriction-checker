@@ -32,7 +32,7 @@ public class StreamsApplicationUtils {
 		config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		// config.put(StreamsConfig.STATE_DIR_CONFIG, stateDir);
 		config.put(AUTO_OFFSET_RESET, autoOffsetReset);
-		config.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1); // commit as fast as possible
+		//config.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1); // commit as fast as possible
 
 		config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 60000);
 		config.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 15000);
