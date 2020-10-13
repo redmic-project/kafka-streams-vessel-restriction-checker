@@ -34,7 +34,7 @@
 		<jts-core.version>1.16.1</jts-core.version>
 		<joda-time.version>2.10.3</joda-time.version>
 		<slf4j.version>1.7.28</slf4j.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<jacoco.version>0.8.1</jacoco.version>
 	</properties>
 
